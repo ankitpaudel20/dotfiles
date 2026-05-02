@@ -1,0 +1,132 @@
+# Home Manager config — operator reference
+
+Standalone Home Manager flake for managing user-level packages and dotfiles on Arch Linux.
+System packages stay on pacman/AUR; KDE/Plasma is out of scope.
+
+## Layout
+
+```
+~/dotfiles/nix/
+├── flake.nix
+├── flake.lock
+├── .envrc                     # `use flake` — auto-loads dev tools when cd here
+├── hosts/
+│   └── smloyarch/             # this machine
+│       └── default.nix
+└── home/
+    ├── default.nix            # imports every module below
+    ├── shell.nix              # zsh, starship, direnv
+    ├── git.nix                # programs.git
+    ├── tools.nix              # bat, eza, fzf, btop, tmux, jq, rg, fastfetch, croc, dive, aria2, ngrok
+    ├── neovim.nix             # binary only — your ~/.config/nvim is untouched
+    ├── kube.nix               # kubectl, helm, helm-ls, gh
+    └── languages.nix          # go, rustup
+```
+
+## First-time activation (bootstrap)
+
+Run from `~/dotfiles/nix` (or wherever the flake lives, including via the symlink to `~/nix-config`).
+
+```bash
+# Back up existing real files automatically — HM refuses to overwrite them otherwise.
+nix run home-manager/master -- switch --flake .#smloy@smloyarch -b pre-hm
+```
+
+`-b pre-hm` renames any conflicting file (e.g. `~/.zshrc`) to `~/.zshrc.pre-hm`. You can delete the backups once you've confirmed everything works.
+
+After this first run, `home-manager` is on your `$PATH` (via the flake's devShell + direnv) and you don't need `nix run ...` again.
+
+## Daily commands
+
+All run from `~/dotfiles/nix` (devShell auto-activates via direnv):
+
+```bash
+home-manager switch --flake .#smloy@smloyarch    # apply changes after editing modules
+home-manager generations                          # list past activations
+home-manager rollback                             # revert to previous generation
+nix flake update                                  # bump nixpkgs + home-manager pins
+nix fmt                                           # format all .nix files
+nix develop                                       # explicitly enter the dev shell
+```
+
+## Verification (after first activation, before pacman cleanup)
+
+Open a fresh shell (`exec zsh`), then check that each binary resolves to `/nix/store/...`, not `/usr/bin/...`:
+
+```bash
+which git zsh starship direnv bat eza fzf btop tmux nvim jq rg kubectl helm gh go rustup ngrok aria2 dive croc fastfetch
+git lg -n 3      # your gitconfig aliases still work
+ll               # eza alias still works
+```
+
+If anything resolves to `/usr/bin/`, HM's bin dir isn't first on `$PATH` for that shell. Fix before continuing to the cleanup steps.
+
+## Cleanup after first successful activation
+
+**Order matters.** Activate first, verify, *then* remove duplicates.
+
+### 1. Remove duplicates from `nix profile`
+
+```bash
+nix profile remove direnv nix-direnv nixfmt-rfc-style go rustup ngrok
+```
+
+Kept on purpose: `nil`, `bfg-repo-cleaner`, `devbox` (out of scope for this flake).
+
+### 2. Remove duplicates from pacman (CLI tools)
+
+```bash
+sudo pacman -Rns bat eza fzf btop git-lfs github-cli helm helm-ls-bin jq ripgrep tmux fastfetch croc dive aria2
+```
+
+Open a fresh shell, verify everything still works.
+
+### 3. Remove zsh plugins from pacman (HM provides them)
+
+```bash
+sudo pacman -Rns zsh-autosuggestions zsh-syntax-highlighting
+```
+
+Open another fresh shell, verify autosuggestions + syntax highlighting still appear.
+
+### Kept on pacman intentionally
+
+- `git`, `neovim` — HM also installs them; HM's bin dir wins on `$PATH`. Keeping pacman copies as a safety net for any boot-time/system caller expecting `/usr/bin/git`. Remove later if you want.
+- Everything GUI: firefox, brave, discord, kitty/foot/alacritty, zed, dbeaver, gimp, etc.
+- KDE/Plasma — entirely out of scope.
+- Anything FHS or with weird GPU/driver coupling.
+
+## Adding a new host (future you)
+
+1. `mkdir -p hosts/<newhost>`
+2. Copy `hosts/smloyarch/default.nix` to `hosts/<newhost>/default.nix`, change `home.username` / `home.homeDirectory` if different.
+3. Add a new entry in `flake.nix`:
+
+   ```nix
+   homeConfigurations."<user>@<newhost>" =
+     home-manager.lib.homeManagerConfiguration {
+       inherit pkgs;
+       modules = [ ./hosts/<newhost> ];
+     };
+   ```
+
+4. On the new machine: `nix run home-manager/master -- switch --flake .#<user>@<newhost> -b pre-hm`
+
+The `home/*.nix` modules are shared across hosts. Anything host-specific lives in `hosts/<host>/default.nix` only.
+
+## Rollback / safety
+
+- `home-manager rollback` reverts the most recent activation.
+- `home-manager generations` lists every past activation with timestamps; activate any older one with `<gen-path>/activate`.
+- Nothing in `/nix/store` is ever mutated — old generations stay until you GC.
+- Garbage-collect old generations: `nix-collect-garbage --delete-older-than 30d`.
+
+## Out of scope (never put here)
+
+- Plasma desktop config, KWin scripts, plasmoid settings
+- Zed `settings.json` (custom JSON, may contain secrets)
+- Anything FHS-dependent or needing kernel/GPU driver alignment
+- System services (NetworkManager, bluez, etc.)
+- Bootloader, kernel, initramfs
+
+These stay managed by their native tooling (pacman, KDE System Settings, etc.).
