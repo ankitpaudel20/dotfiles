@@ -28,11 +28,14 @@ System packages stay on pacman/AUR; KDE/Plasma is out of scope.
 Run from `~/dotfiles/nix` (or wherever the flake lives, including via the symlink to `~/nix-config`).
 
 ```bash
-# Back up existing real files automatically — HM refuses to overwrite them otherwise.
-nix run home-manager/master -- switch --flake .#smloy@smloyarch -b pre-hm
+nix run home-manager/master -- switch --flake .#smloy@smloyarch
 ```
 
-`-b pre-hm` renames any conflicting file (e.g. `~/.zshrc`) to `~/.zshrc.pre-hm`. You can delete the backups once you've confirmed everything works.
+The matching `arch_normal_install_config/user_configuration.json` deliberately doesn't install pacman zsh or any HM-managed dotfile owner, so there's nothing in `~/` for HM to conflict with on a fresh boot. If you're activating onto a machine that *does* already have a real `~/.zshrc` / `~/.gitconfig` / etc., re-run with `-b pre-hm` to rename them out of the way:
+
+```bash
+nix run home-manager/master -- switch --flake .#smloy@smloyarch -b pre-hm
+```
 
 After this first run, `home-manager` is on your `$PATH` (via the flake's devShell + direnv) and you don't need `nix run ...` again.
 
