@@ -1,5 +1,9 @@
 { config, lib, ... }:
 {
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
