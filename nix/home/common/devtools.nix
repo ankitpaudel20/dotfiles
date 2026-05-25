@@ -10,5 +10,6 @@
     # Build systems
     cmake
     claude-code
+    postman
   ];
 }

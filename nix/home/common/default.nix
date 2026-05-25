@@ -7,6 +7,7 @@
     ./tools.nix
     ./git.nix
     ./shell.nix
+    ./apps.nix
   ];
 
   programs.home-manager.enable = true;

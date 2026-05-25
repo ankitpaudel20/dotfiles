@@ -4,7 +4,7 @@
   "audio_config": {
     "audio": "pipewire"
   },
-  "bootloader": "Systemd-boot",
+  "bootloader": "Grub",
   "config_version": "2.6.3",
   "debug": false,
   "disk_encryption": null,
@@ -24,19 +24,20 @@
   "offline": false,
   "packages": [
     "adb",
-    "alacritty",
     "alsa-tools",
     "alsa-utils",
     "arch-install-scripts",
     "bluez-utils",
+    "code",
     "discord",
     "docker",
     "docker-compose",
     "dolphin",
-    "easyeffects",
     "firefox",
     "flameshot",
+    "foot",
     "git",
+    "gparted",
     "intel-gpu-tools",
     "intel-ucode",
     "kate",
@@ -44,7 +45,8 @@
     "khotkeys",
     "konsole",
     "kscreen",
-    "libreoffice-fresh",
+    "libvirt",
+    "lm_sensors",
     "mpv",
     "neovim",
     "noto-fonts",
@@ -76,6 +78,7 @@
     "ttf-jetbrains-mono",
     "veracrypt",
     "vim",
+    "virt-manager",
     "wayland",
     "xorg",
     "zed"
@@ -97,9 +100,9 @@
   "version": "2.6.3",
   "custom-commands": [
     "git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --needed --noconfirm --asdeps",
-    "usermod -aG docker,audio,video,storage,network smloy",
-    "yay -S --noconfirm acer-wmi-battery-dkms android-sdk-platform-tools antigravity brave-bin cursor-bin helm-ls-bin localsend-bin opencode-bin  postman-bin qownnotes quickemu-git quickgui-bin",
-    "systemctl enable NetworkManager sddm",
+    "usermod -aG docker,audio,video,storage,network,libvirt smloy",
+    "yay -S --noconfirm acer-wmi-battery-dkms android-sdk-platform-tools antigravity brave-bin cursor-bin helm-ls-bin localsend-bin onlyoffice-bin opencode-bin postman-bin qownnotes quickemu-git quickgui-bin",
+    "systemctl enable NetworkManager sddm libvirtd",
     "curl -fsSL https://install.determinate.systems/nix | sh -s -- install",
     "nix profile install 'nixpkgs#nil' 'nixpkgs#devbox'"
   ]
