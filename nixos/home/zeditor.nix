@@ -16,6 +16,7 @@
       "env"
     ];
     userSettings = {
+      soft_wrap = "editor_width";
       diff_view_style = "split";
       zoomed_padding = false;
       cli_default_open_behavior = "existing_window";
