@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./languages.nix
+    ./devtools.nix
     ./kube.nix
     ./neovim.nix
     ./tools.nix

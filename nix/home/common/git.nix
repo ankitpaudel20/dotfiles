@@ -3,6 +3,13 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+    ignores = [
+      ".envrc"
+      ".direnv/"
+      "result"
+      "result-*"
+      "docs/superpowers"
+    ];
 
     settings = {
       user.name = "Ankit Paudel";

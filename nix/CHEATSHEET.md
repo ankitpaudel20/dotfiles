@@ -27,15 +27,18 @@ All commands assume you're inside `~/dotfiles/nix` (the `.envrc` auto-loads the 
 
 | I want to... | Touch this file |
 |---|---|
-| Add a CLI package | `home/tools.nix` (HM module) or `home/kube.nix`/`home/languages.nix` (topical) |
-| Add a typed program with shell integration | `home/tools.nix` — `programs.<name>.enable = true` |
-| Change a zsh alias | `home/shell.nix` — `programs.zsh.shellAliases` |
-| Add a zsh function or PATH export | `home/shell.nix` — `programs.zsh.initContent` |
-| Change a git option | `home/git.nix` — `programs.git.extraConfig` |
-| Add a git alias | `home/git.nix` — `programs.git.aliases` |
+| Add a CLI package | `home/common/tools.nix` (HM module) or `home/common/kube.nix`/`home/common/devtools.nix` (topical) |
+| Add a typed program with shell integration | `home/common/tools.nix` — `programs.<name>.enable = true` |
+| Change a zsh alias | `home/common/shell.nix` — `programs.zsh.shellAliases` |
+| Add a zsh function or PATH export | `home/common/shell.nix` — `programs.zsh.initContent` |
+| Change a git option | `home/common/git.nix` — `programs.git.settings` |
+| Add a git alias | `home/common/git.nix` — `programs.git.settings.alias` |
 | Add a host-specific override | `hosts/smloyarch/default.nix` |
-| Add a new module | Create `home/<name>.nix`, then add `./<name>.nix` to `home/default.nix` imports |
-| Add an activation hook (sudo/system bridge) | `home.activation.<name>` in any module — see `home/shell.nix` for the `/etc/shells` example |
+| Add a new shared module | Create `home/common/<name>.nix`, then add `./<name>.nix` to `home/common/default.nix` imports |
+| Add an activation hook (sudo/system bridge) | `home.activation.<name>` in any module — see `home/common/shell.nix` for the `/etc/shells` example |
+
+Anything that should only ship on NixOS (KDE/Plasma config, foot terminal,
+spotify/mpv, gcloud package, etc.) lives in `~/dotfiles/nixos/home/`, NOT here.
 
 ---
 

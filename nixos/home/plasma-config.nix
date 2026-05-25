@@ -1,0 +1,6 @@
+{
+  programs.plasma = {
+    enable = true;
+
+  };
+}

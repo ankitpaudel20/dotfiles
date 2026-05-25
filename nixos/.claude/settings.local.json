@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(systemctl --user status ssh-agent)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(mv git.nix neovim.nix kube.nix gcloud.nix devtools.nix shell.nix tools.nix common/)",
+      "Bash(mv plasma-config.nix services.nix browser.nix vscode.nix zeditor.nix nixos/)",
+      "Bash(rm default.nix)",
+      "Bash(nix flake *)"
+    ]
+  }
+}

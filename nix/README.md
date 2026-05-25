@@ -12,16 +12,21 @@ System packages stay on pacman/AUR; KDE/Plasma is out of scope.
 ├── .envrc                     # `use flake` — auto-loads dev tools when cd here
 ├── hosts/
 │   └── smloyarch/             # this machine
-│       └── default.nix
+│       └── default.nix        # username, homeDir, stateVersion, host-only overrides
 └── home/
-    ├── default.nix            # imports every module below
-    ├── shell.nix              # zsh, starship, direnv
-    ├── git.nix                # programs.git
-    ├── tools.nix              # bat, eza, fzf, btop, tmux, jq, rg, fastfetch, croc, dive, aria2, ngrok
-    ├── neovim.nix             # binary only — your ~/.config/nvim is untouched
-    ├── kube.nix               # kubectl, helm, helm-ls, gh
-    └── languages.nix          # go, rustup
+    └── common/                # shared HM modules — also imported by ../../nixos
+        ├── default.nix        # imports every module below
+        ├── shell.nix          # zsh, starship, direnv
+        ├── git.nix            # programs.git
+        ├── tools.nix          # bat, eza, fzf, btop, tmux, jq, rg, fastfetch, croc, dive, aria2, ngrok, …
+        ├── neovim.nix         # binary only — your ~/.config/nvim is untouched
+        ├── kube.nix           # kubectl, helm, helm-ls, gh, k9s, krew, argocd
+        └── devtools.nix       # uv, go, ruff, rustup, cmake, claude-code
 ```
+
+The sibling `~/dotfiles/nixos/` flake imports `nix/home/common` for its NixOS host
+(`swift-go`) and layers NixOS-only modules (KDE/Plasma, Zed/VS Code, gcloud, GUI
+extras) on top.
 
 ## First-time activation (bootstrap)
 
@@ -115,7 +120,7 @@ Open another fresh shell, verify autosuggestions + syntax highlighting still app
 
 4. On the new machine: `nix run home-manager/master -- switch --flake .#<user>@<newhost> -b pre-hm`
 
-The `home/*.nix` modules are shared across hosts. Anything host-specific lives in `hosts/<host>/default.nix` only.
+The `home/common/*.nix` modules are shared across hosts. Anything host-specific lives in `hosts/<host>/default.nix` only.
 
 ## Rollback / safety
 

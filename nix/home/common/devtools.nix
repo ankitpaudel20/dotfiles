@@ -9,5 +9,6 @@
     rustup
     # Build systems
     cmake
+    claude-code
   ];
 }
