@@ -10,10 +10,8 @@
     ./kde-extras.nix
     ./gcloud.nix
     ./gui.nix
+    ./python.nix
   ];
 
   home.stateVersion = "26.05";
-
-  # python314 doesn't warrant its own module yet — single package.
-  home.packages = [ pkgs.python314 ];
 }
