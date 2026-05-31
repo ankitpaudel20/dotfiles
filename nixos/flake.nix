@@ -2,8 +2,8 @@
   description = "Default";
 
   inputs = {
-    # We use unstable as agreed
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -21,6 +21,7 @@
     inputs@{
       self,
       nixpkgs,
+      nixpkgs-unstable,
       home-manager,
       ...
     }:
@@ -30,7 +31,10 @@
         inherit system;
         config.allowUnfree = true;
       };
-
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
       # Each subdirectory under ./hosts becomes a nixosConfiguration named after the directory.
       # The directory must contain a configuration.nix.
       hostNames = builtins.attrNames (
@@ -56,7 +60,7 @@
                 useUserPackages = true;
 
                 # Pass inputs to home-manager modules too
-                extraSpecialArgs = { inherit inputs; };
+                extraSpecialArgs = { inherit inputs pkgs-unstable; };
 
                 users.smloy = import ./home;
               };

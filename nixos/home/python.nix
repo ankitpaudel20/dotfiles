@@ -15,7 +15,6 @@
         httpx
         pydantic-settings
         click
-        io
       ]
     ))
   ];
