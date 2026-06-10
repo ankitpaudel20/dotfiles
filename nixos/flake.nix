@@ -5,6 +5,13 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    # Pinned to the last revision before nixpkgs bumped google-cloud-sdk's
+    # bundled python 3.12 -> 3.14 (2026-05-27), which broke its build
+    # (auto-patchelf can't satisfy libpython3.14.so.1.0 / libtcl9*.so).
+    # Drop this once the 3.14 bundle builds again upstream.
+    nixpkgs-gcloud.url = "github:nixos/nixpkgs/64c08a7ca051951c8eae34e3e3cb1e202fe36786";
+    claude-code.url = "github:sadjow/claude-code-nix";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,6 +30,7 @@
       nixpkgs,
       nixpkgs-unstable,
       home-manager,
+      claude-code,
       ...
     }:
     let
@@ -51,6 +59,12 @@
 
           modules = [
             ./hosts/${name}/configuration.nix
+
+            # Override pkgs.claude-code with the always-current build from
+            # sadjow/claude-code-nix. Applied to the system nixpkgs so it also
+            # reaches home-manager (useGlobalPkgs = true), where the shared
+            # devtools.nix module installs `claude-code`.
+            { nixpkgs.overlays = [ claude-code.overlays.default ]; }
 
             # Home Manager module
             home-manager.nixosModules.default

@@ -4,7 +4,11 @@
       "Bash(git rm *)",
       "Bash(git add *)",
       "Bash(nix flake *)",
-      "Bash(nix eval *)"
+      "Bash(nix eval *)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(nix build --dry-run --impure --expr ' *)"
     ]
   }
 }

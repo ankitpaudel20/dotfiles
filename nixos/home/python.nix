@@ -15,6 +15,7 @@
         httpx
         pydantic-settings
         click
+        marimo
       ]
     ))
   ];

@@ -24,7 +24,10 @@
 
     zellij = {
       enable = true;
-      enableZshIntegration = true;
+      enableZshIntegration = false;
+      settings = {
+        on_force_close = "quit";
+      };
     };
   };
 

@@ -35,6 +35,7 @@
       EDITOR = "nvim";
       VISUAL = "nvim";
       SUDO_EDITOR = "/usr/bin/vim";
+      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
 
     initContent = ''
