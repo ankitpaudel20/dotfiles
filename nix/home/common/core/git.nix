@@ -31,7 +31,6 @@
       push.autoSetupRemote = true;
       difftool.prompt = false;
       pager.difftool = true;
-      core.excludesfile = "/home/smloy/.config/git/ignore";
 
       credential."https://github.com" = {
         helper = [

@@ -1,4 +1,0 @@
-{ ... }:
-{
-  programs.foot.enable = true;
-}

@@ -1,13 +1,8 @@
 { ... }:
 {
   imports = [
-    ./devtools.nix
-    ./kube.nix
-    ./neovim.nix
-    ./tools.nix
-    ./git.nix
-    ./shell.nix
-    ./apps.nix
+    ./core
+    ./linux-desktop.nix
   ];
 
   programs.home-manager.enable = true;

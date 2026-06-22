@@ -34,8 +34,6 @@
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
-      SUDO_EDITOR = "/usr/bin/vim";
-      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
 
     initContent = ''
@@ -48,35 +46,24 @@
       # Standardize on Emacs map
       bindkey -e
 
-      # 3. Load the native Zsh terminfo database module
+      # Load the native Zsh terminfo database module
       zmodload zsh/terminfo
 
-      # 4. Dynamically bind standard keys using Terminfo
-      # (The [[ -n ... ]] check ensures the key exists in your current terminal's database)
+      # Dynamically bind standard keys using Terminfo
       [[ -n "''${terminfo[khome]}" ]] && bindkey "''${terminfo[khome]}" beginning-of-line
       [[ -n "''${terminfo[kend]}" ]]  && bindkey "''${terminfo[kend]}"  end-of-line
       [[ -n "''${terminfo[kdch1]}" ]] && bindkey "''${terminfo[kdch1]}" delete-char
 
-      # 5. Fallback bindings for Ctrl-modified navigation (Not covered by standard terminfo)
+      # Fallback bindings for Ctrl-modified navigation
       bindkey "^[[1;5D"  backward-word        # Ctrl + Left Arrow
       bindkey "^[[1;5C"  forward-word         # Ctrl + Right Arrow
 
-      # 6. Universal Word Deletion Support
-      bindkey '^H'          backward-kill-word  # Works in Foot & standard terminals
-      bindkey '\e[127;5u'   backward-kill-word  # Works in Kitty/Alacritty/Neovim (CSI u Protocol)
-
-      generate_python_index_url () {
-        : "''${GCP_ARTIFACT_PROJECT:?set GCP_ARTIFACT_PROJECT in ~/.zshenv.local}"
-        gcloud auth login
-        access_token=$(gcloud auth print-access-token)
-        export PYTHON_INDEX_URL="https://oauth2accesstoken:$access_token@us-python.pkg.dev/$GCP_ARTIFACT_PROJECT/packages/simple/"
-      }
+      # Universal word deletion
+      bindkey '^H'          backward-kill-word
+      bindkey '\e[127;5u'   backward-kill-word
 
       [ -f "$HOME/.zshenv.local" ] && source "$HOME/.zshenv.local"
 
-      # Arch ships google-cloud-cli under /opt; on NixOS the binary is on PATH
-      # via gcloud.nix and this directory doesn't exist.
-      [ -d /opt/google-cloud-cli/bin ] && export PATH="/opt/google-cloud-cli/bin:$PATH"
       export PATH="''${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
       source <(kubectl completion zsh)

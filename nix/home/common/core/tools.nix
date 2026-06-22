@@ -50,12 +50,6 @@
     lazydocker
     yazi
     nushell
-    ueberzugpp
-
-    # Clipboards / Wayland helpers
-    xclip
-    wl-clipboard
-    wtype
 
     # Text / archive / misc utilities
     bc
@@ -64,7 +58,6 @@
     wget
     unzip
     qpdf
-    tesseract
     unar
     graphviz
 
@@ -78,6 +71,5 @@
     yq-go
     unrar # unfree, allowed via flake's config.allowUnfree
     valkey # provides valkey-cli; no systemd service from HM
-    nil
   ];
 }

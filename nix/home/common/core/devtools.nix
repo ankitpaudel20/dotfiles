@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, ... }:
 {
   programs = {
     uv.enable = true;
@@ -9,7 +9,5 @@
     rustup
     # Build systems
     cmake
-    claude-code
-    postman
   ];
 }

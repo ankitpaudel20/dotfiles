@@ -7,26 +7,61 @@ System packages stay on pacman/AUR; KDE/Plasma is out of scope.
 
 ```
 ~/dotfiles/nix/
-├── flake.nix
+├── flake.nix                       # exposes smloy@smloyarch + generic{,-aarch64}
 ├── flake.lock
-├── .envrc                     # `use flake` — auto-loads dev tools when cd here
+├── .envrc                          # `use flake` — auto-loads dev tools when cd here
 ├── hosts/
-│   └── smloyarch/             # this machine
-│       └── default.nix        # username, homeDir, stateVersion, host-only overrides
+│   ├── smloyarch/                  # this machine (Arch)
+│   │   └── default.nix             # imports home/common + home/common/arch-overrides.nix
+│   └── generic/                    # any fresh non-NixOS Linux box (VPS, container)
+│       └── default.nix             # reads $USER/$HOME at activation; imports home/common/core only
 └── home/
-    └── common/                # shared HM modules — also imported by ../../nixos
-        ├── default.nix        # imports every module below
-        ├── shell.nix          # zsh, starship, direnv
-        ├── git.nix            # programs.git
-        ├── tools.nix          # bat, eza, fzf, btop, tmux, jq, rg, fastfetch, croc, dive, aria2, ngrok, …
-        ├── neovim.nix         # binary only — your ~/.config/nvim is untouched
-        ├── kube.nix           # kubectl, helm, helm-ls, gh, k9s, krew, argocd
-        └── devtools.nix       # uv, go, ruff, rustup, cmake, claude-code
+    └── common/                     # shared HM modules — also imported by ../../nixos
+        ├── default.nix             # imports ./core + ./linux-desktop.nix
+        ├── core/                   # portable, headless-safe; what `generic` gets
+        │   ├── default.nix
+        │   ├── shell.nix           # zsh, starship, direnv (portable bits only)
+        │   ├── git.nix             # programs.git
+        │   ├── tools.nix           # bat, eza, fzf, btop, tmux, jq, rg, fastfetch, croc, dive, aria2, ngrok, …
+        │   ├── neovim.nix          # binary only — your ~/.config/nvim is untouched
+        │   ├── kube.nix            # kubectl, helm, helm-ls, gh, k9s, krew, argocd
+        │   └── devtools.nix        # uv, go, rustup, cmake
+        ├── linux-desktop.nix       # foot, xclip, wl-clipboard, wtype, ueberzugpp — Wayland/X11 only
+        └── arch-overrides.nix      # SSL_CERT_FILE, SUDO_EDITOR, /opt/google-cloud-cli, generate_python_index_url
+                                    #   — imported ONLY by hosts/smloyarch
 ```
 
 The sibling `~/dotfiles/nixos/` flake imports `nix/home/common` for its NixOS host
 (`swift-go`) and layers NixOS-only modules (KDE/Plasma, Zed/VS Code, gcloud, GUI
-extras) on top.
+extras) on top. Swift-go gets `core/` + `linux-desktop.nix`; it does **not** get
+`arch-overrides.nix`.
+
+## Generic profile (any non-NixOS Linux box)
+
+For a fresh VPS, container, or new dev machine where you don't want to write a
+per-host module first, use the `generic` profile. It reads `$USER` and `$HOME`
+at activation, so one command works for any user.
+
+```bash
+# 1. Install Determinate Nix (skip if you already have Nix)
+curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+
+# 2. Activate the generic profile
+nix run home-manager/master -- switch \
+  --flake github:ankitpaudel/dotfiles?dir=nix#generic \
+  --impure -b pre-hm
+```
+
+- `--impure` is **required** — `hosts/generic/default.nix` reads `$USER`/`$HOME`
+  via `builtins.getEnv`. Without it you'll see "USER is empty …".
+- Use `generic-aarch64` instead of `generic` on ARM hosts.
+- `-b pre-hm` renames pre-existing `~/.zshrc`/`~/.gitconfig`/… out of the way on
+  the first activation; safe no-op on repeat runs.
+
+The generic profile gets only `home/common/core/` — no clipboards, no foot
+terminal, no Arch-specific paths. Add host-specific overrides via
+`~/.zshenv.local` (which `core/shell.nix` sources automatically) rather than
+editing the flake per box.
 
 ## First-time activation (bootstrap)
 

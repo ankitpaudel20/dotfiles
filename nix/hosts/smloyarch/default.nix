@@ -1,6 +1,9 @@
 { ... }:
 {
-  imports = [ ../../home/common ];
+  imports = [
+    ../../home/common
+    ../../home/common/arch-overrides.nix
+  ];
 
   home.username = "smloy";
   home.homeDirectory = "/home/smloy";
