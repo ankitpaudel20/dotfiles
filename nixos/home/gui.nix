@@ -10,6 +10,7 @@
 
     qalculate-qt
     helm-dashboard
+    materialgram
 
     mpv
     yt-dlp
